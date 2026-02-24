@@ -1,6 +1,8 @@
-# Week X Example Problems: [Topic Title]
+# Week 10 Example Problems: CodeReview / PR
 
-**Authors:** [Student Name 1, Student Name 2, Student Name 3]  
+**Authors:** [Neel Sanjaybhai Faganiya, Ibrahim Mohammed Sayem, Felix Wang]
+
+**GitHub Repository:** https://github.com/U70-TK/cs846-presentation-winter-26
 
 ## 1. Example Problems
 
