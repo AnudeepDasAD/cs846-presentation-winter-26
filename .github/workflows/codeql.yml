@@ -2,6 +2,11 @@ name: CodeQL (problem_d)
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - feat-audit
+      - feat-generate-report
+      - feat-audit-based-on-role
 
 jobs:
   analyze:
