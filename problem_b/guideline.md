@@ -28,3 +28,24 @@ Review the following code for: correctness, error handling, security (what we ex
 ```
 Please review the code above and give feedback on correctness, security, and edge cases.
 ```
+
+<!-- 
+Guideline: Request AI-Led Contextual Summaries Before Issue Detection
+
+Description:
+When asking an LLM to review a pull request, first request a structured summary of the PR’s intent, affected components, and major changes before asking for issue detection. Use the summary to guide deeper inspection.
+
+Reasoning:
+The study found that developers struggle with context switching and insufficient contextual information when reviewing pull requests, especially large or unfamiliar ones. Participants preferred AI-led summaries that provided an overview before detailed analysis. This reduced cognitive load, improved understanding, and increased perceived usefulness of the AI assistant. Requesting a contextual summary before issue detection aligns with the empirically preferred “AI-led” review mode identified in the paper.
+
+Good Example:
+This is a pull request in a service I’m not familiar with.
+First:
+- Summarize what the PR is trying to achieve.
+- Identify which components are affected.
+- Highlight complex or high-risk areas.
+Then provide specific review comments.
+
+Bad Example:
+Review this pull request and list problems.
+ -->
