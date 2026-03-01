@@ -30,6 +30,9 @@ Please review the code above and give feedback on correctness, security, and edg
 ```
 
 <!-- 
+<<<Rethinking Code Review Workflows with LL Assistance: An Empirical Study>>>
+
+
 Guideline: Request AI-Led Contextual Summaries Before Issue Detection
 
 Description:
@@ -48,4 +51,34 @@ Then provide specific review comments.
 
 Bad Example:
 Review this pull request and list problems.
+ -->
+
+ <!--
+<<<Automated Code Review in Practice>>>
+
+
+Guideline: Filter and Prioritize Automated Comments to Reduce Noise
+
+Description:
+Configure or prompt automated review tools to focus on high-impact issues (correctness, security, performance) and avoid low-value or out-of-scope suggestions.
+
+Reasoning:
+26.2% of automated comments were labeled “Won’t Fix” or “Closed.” Developers reported frustration with irrelevant or trivial comments and recursive re-reviews that slowed development. The study shows that unnecessary comments increase PR closure time and cognitive overhead. Signal-to-noise ratio directly affects developer trust and productivity.
+
+Good Example:
+
+Review this pull request focusing only on:
+
+correctness
+
+potential bugs
+
+performance regressions
+
+security risks
+Do not suggest stylistic or refactoring improvements unless critical.
+
+Bad Example:
+
+Review this PR and suggest all possible improvements.
  -->
