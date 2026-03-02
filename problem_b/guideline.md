@@ -116,3 +116,35 @@ Bad Example:
 
 This is production code and I want you to review it carefully for correctness performance and security but also keep in mind not to change formatting and just generally give useful suggestions.
  -->
+
+
+ <!--
+<<<<<Detecting malicious pull requests at scale with LLMs>>>>>
+
+
+Guideline 6: Break Large PRs into Logical Segments
+Description
+
+When reviewing large diffs, instruct the LLM to analyze changes file-by-file or chunk-by-chunk before producing a final verdict.
+
+Reasoning
+
+The blog shows performance degradation with large context windows and solved it with recursive chunking. Large PRs can hide small malicious inserts inside huge refactors.
+
+Good Example
+
+Analyze this PR file-by-file.
+For each file:
+
+Identify security risks
+
+Summarize intent
+
+Then provide an overall classification.
+
+Bad Example
+
+Review this entire 10,000-line diff at once.
+
+(Leads to shallow or degraded analysis.)
+ -->
