@@ -205,3 +205,67 @@ Do not suggest stylistic changes unless they affect correctness.
 Bad Example
 Review this pull request and suggest improvements.
  -->
+
+
+
+
+ <!--
+ ## Guideline: Explicitly State Assumptions and Non-Goals
+
+### Description
+
+When prompting an LLM for code review, explicitly state what assumptions the model should make and what it should **not** evaluate. Clarify system boundaries, trust model, and review scope exclusions to prevent overreach and hallucinated concerns.
+
+---
+
+### Reasoning
+
+Even when given context, LLMs may:
+
+- Assume missing system components  
+- Critique hypothetical architectures  
+- Suggest redesigns outside the PR scope  
+- Flag issues that are handled elsewhere in the system  
+
+By explicitly stating assumptions and non-goals, you:
+
+- Prevent hallucinated architectural criticism  
+- Reduce overreach beyond PR scope  
+- Keep feedback aligned with the actual change  
+- Improve precision in real-world reviews  
+
+This complements the structured, context-first guideline:
+
+- **Structured, context-first guideline** → Controls *how* the review is structured  
+- **This guideline** → Controls *what boundaries* the model must respect  
+
+---
+
+### Good Example
+
+```text
+You are reviewing this pull request.
+
+Assumptions:
+- Authentication is handled upstream.
+- Input validation occurs in the API gateway.
+- This service does not manage database transactions directly.
+
+Non-goals:
+- Do not suggest architectural redesign.
+- Do not propose new frameworks.
+- Do not refactor unrelated modules.
+
+Review only the changes in this diff for:
+- correctness
+- security within this service boundary
+- performance regressions
+
+### Bad Example
+
+```text
+Review this PR and suggest improvements.
+OR
+Review this PR for correctness and security
+
+ -->
