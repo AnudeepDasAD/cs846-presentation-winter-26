@@ -259,6 +259,7 @@ Review only the changes in this diff for:
 - correctness
 - security within this service boundary
 - performance regressions
+```
 
 ### Bad Example
 
@@ -266,3 +267,4 @@ Review only the changes in this diff for:
 Review this PR and suggest improvements.
 OR
 Review this PR for correctness and security
+```
