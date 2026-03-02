@@ -70,6 +70,16 @@ However, multer package versions < 2.1.0 are known to be severely vulnerable to 
 
 Any approach that successfully identified this vulnerable dependency is a correct solution. 
 
+---
+
+### Problem D: Northwind Signal Project PR Review
+
+#### Problem D.1: Usage Audit Feature PR Review
+
+**Evaluation Description:**
+
+The most severe issue contained in this PR is that, the binary executable file under the folder `problem_d/problem_d_backend/src/vendor` called `audit_writer` is malicious. 
+
 
 
 ## 3. References
