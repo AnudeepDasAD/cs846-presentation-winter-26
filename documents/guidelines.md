@@ -20,15 +20,87 @@
 
 > **Note:** Guidelines should be actionable, specific, and usable during real coding tasks.
 
-### Guideline 1: [Short, Actionable Title]
+### Guideline 1: Create a structured instruction file [9].
+
 **Description:**  
-State the guideline clearly and concretely.
+
+Add a Copilot Code Review instructions file that is concise, structured, and scoped to where it should apply:
+
+* Use repo-wide `.github/copilot-instructions.md` for standards that apply everywhere.
+
+* Use path-specific `.github/instructions/*.instructions.md` with applyTo frontmatter for language/module-specific rules. 
+
+Your instruction file should be concise and structured, consider including sections like: "Naming Conventions", "Code Style", "Error Handling", "Testing", and "Example".
 
 **Reasoning:**  
-Explain *why* this guideline is important, referencing readings and external sources where relevant.
+LLMs struggle with complex tasks that require extensive contextual or repository understanding [5], and due to the inherent undeterministic nature of LLMs, their outputs can drift in unexpected directions without clear constraints. Github Copilot recently added support for repo-wide and path-specific instructions [9] so that you can define a universal and customized guidelines for your Copilot agent to fit into your workflow. By providing structured headings and bullet points, it helps Copilot to access organized and focued instruction. However, long instruction files (over 1000 lines) should be avoided, as this leads to inconsistent behaviours and may cause "Lost in the middle" effect [16]. 
 
-**Example:**  
-Provide a brief illustrative example (code or pseudo-code if helpful).
+**Good Example:**  
+
+```
+---
+applyTo: "**/*.ts"
+---
+# TypeScript Coding Standards
+This file defines our TypeScript coding conventions for Copilot code review.
+
+## Naming Conventions
+
+- Use `camelCase` for variables and functions.
+- Use `PascalCase` for class and interface names.
+- Prefix private variables with `_`.
+
+## Code Style
+
+- Prefer `const` over `let` when variables are not reassigned.
+- Use arrow functions for anonymous callbacks.
+- Avoid using `any` type; specify more precise types whenever possible.
+- Limit line length to 100 characters.
+
+## Error Handling
+
+- Always handle promise rejections with `try/catch` or `.catch()`.
+- Use custom error classes for application-specific errors.
+
+## Testing
+
+- Write unit tests for all exported functions.
+- Use [Jest](https://jestjs.io/) for all testing.
+- Name test files as `<filename>.test.ts`.
+
+## Example
+
+```typescript
+// Good
+interface User {
+  id: number;
+  name: string;
+}
+
+const fetchUser = async (id: number): Promise<User> => {
+  try {
+    // ...fetch logic
+  } catch (error) {
+    // handle error
+  }
+};
+
+// Bad
+interface user {
+  Id: number;
+  Name: string;
+}
+
+async function FetchUser(Id) {
+  // ...fetch logic, no error handling
+}
+```
+
+**Bad Example:**
+
+```
+Perform a Pull Request review.
+```
 
 ---
 
@@ -102,6 +174,47 @@ Ensure good testing principles like Blackbox testing, Whitebox testing, MC/DC te
 **Bad Example:**
 
 Writing meaningless test cases to inflate high test coverage.
+
+---
+
+### Guideline 3: Be Extra Cautious about Binary Executables [13]
+**Description:**  
+Avoid committing binary executables (e.g., .exe, .dll, .jar, compiled artifacts, vendor-provided binaries) directly into the repository unless absolutely necessary. If inclusion is required, document their origin for accountability [1]. 
+
+**Reasoning:**  
+
+Previous studies have shown that many known CVE vulnerabilities are embedded within third-party components and precompiled binaries committed into repositories [13–15]. Unlike source code, binary artifacts cannot be meaningfully reviewed, diffed, or statically analyzed using standard development workflows. This creates a blind spot in both human review and automated tooling. However, opaqueness requirements do exist, and it also happens a lot in testing. Thus, binary files they must be treated as high-risk supply chain elements rather than normal source files.
+
+**Good Example:**
+
+Require the PR submitter to explicitly justify its inclusion. Explicitly document it for accountability. 
+
+**Bad Example:**
+
+Ignore it and merge it into the repo. 
+
+---
+
+### Guideline 4: Keep Pull Requests Small and Focused
+**Description:**  
+Require pull requests to contain one logical change (e.g., a single feature, fix, or refactor). Avoid bundling unrelated modifications in the same PR.
+
+**Reasoning:**  
+Smaller PRs reduce cognitive load, improve defect detection, and make reviews faster and more thorough. Large, mixed-purpose PRs hide risk and often receive superficial approval—especially in AI-accelerated workflows where diffs can grow quickly.
+
+In modern AI-assisted workflows, this becomes even more important:
+- LLMs may generate large diffs quickly.
+- Reviewers may assume AI-generated changes are safe.
+- Subtle logic issues can hide inside extensive formatting or refactoring changes.
+
+**Good Example:**
+PR: “Fix null check in authentication flow”
+– Small logic change
+– Corresponding test updates
+– No unrelated refactoring
+
+**Bad Example:**
+PR: “Refactor + Cleanup + Add feature + Upgrade deps”
 
 ---
 
