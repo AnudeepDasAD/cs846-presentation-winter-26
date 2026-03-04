@@ -1,4 +1,4 @@
-<!-- Simulated PR description for Problem B v3 -->
+<!-- Simulated PR description for Problem B -->
 
 # Add user display lookup for dashboard header
 
@@ -49,11 +49,17 @@ Added the following helper functions:
 ## Constraints & Requirements
 
 - Do **not expose internal user IDs** (UUIDs, PKs) to the front end.
+
 - All external API calls must:
   - Timeout after **2 seconds**
   - Avoid blocking the dashboard render
+  - Fail gracefully if the external API is unavailable or malformed
+
 - Keep the dashboard responsive:
-  - Avoid redundant or unnecessary API calls in hot paths (especially header rendering).
+  - Avoid redundant or unnecessary API calls in hot paths.
+  - The dashboard header is rendered on **every page load**.
+  - It must not make multiple network calls per request.
+
 - Authentication and input validation are handled upstream (API gateway).
 
 ---
@@ -67,28 +73,9 @@ Added the following helper functions:
 
 ---
 
-## Testing
-
-### Manual
-
-- Dashboard header shows correct name for logged-in user.
-- Role is displayed when present.
-- No user ID values appear in UI.
-
-### Functional
-
-- `lookup_by_email(email)`:
-  - Returns correct ID for known email.
-  - Returns `None` for unknown email.
-
-- `get_user_list(role="admin")`:
-  - Returns only users with matching role.
-
----
-
 ## Risk & Impact
 
 - Introduces dependency on external User API in dashboard render path.
-- Potential performance impact if API latency increases.
+- This code will be deployed to production this week.
+- Any latency or failure in the external API may affect all users.
 - Must ensure timeout handling and graceful degradation.
-
