@@ -20,6 +20,9 @@
 - Wolves in the Repository: A Software Engineering Analysis of the XZ Utils Supply Chain Attack [13]
 - Arbiter: Bridging the static and dynamic divide in vulnerability discovery on binary programs. [14]
 - Your security scans are missing Critical Vulnerabilities—Here’s Why. [15]
+- Lost in the middle: How language models use long contexts. [16]
+- A {Mixed-Methods} Study of {Open-Source} Software Maintainers On Vulnerability Management and Platform Security Features. [17]
+- Coverage Isn’t Enough: SBFL-Driven Insights into Manually Created vs. Automatically Generated Tests. [18]
 - Limitations of the LLM-as-a-Judge Approach for Evaluating LLM Outputs in Expert Knowledge Tasks. [19]
 - Can LLMs Replace Human Evaluators? An Empirical Study of LLM-as-a-Judge in Software Engineering. [20]
 
