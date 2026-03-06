@@ -188,7 +188,7 @@ Ignore it and merge it into the repo.
 
 ---
 
-### Guideline 4: Use a Structured, Context-First Review Prompt
+### Guideline 4: Use a Structured, Context-First Review Prompt [3][7]
 
 **Description:**
 
@@ -216,7 +216,7 @@ Review this pull request and suggest improvements.
 
 ----
 
-### Guideline 5: Require Evidence-Grounded Justification Before Accepting LLM Claims
+### Guideline 5: Require Evidence-Grounded Justification Before Accepting LLM Claims [3]
 **Description:**
 
 When prompting an LLM to evaluate tests or validate a reviewer comment, explicitly instruct it to cite specific line numbers, function names, or test cases as evidence before reaching a conclusion. Do not accept a finding unless the model can point to the exact code that supports it.
