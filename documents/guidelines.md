@@ -291,7 +291,7 @@ Review this PR and suggest improvements.
 
 ---
 
-### Guideline 7: Understand the Intent Before You Review
+### Guideline 7: Understand the Intent Before You Review [7]
 
 **Description:**
 
@@ -300,7 +300,7 @@ Before judging any code, first establish what it is supposed to do. Read the doc
 ---
 
 **Reasoning:**
- - GPT-4o assessed code correctness 68.5% of the time when given a problem description, dropping significantly without it [13]
+ - GPT-4o assessed code correctness 68.5% of the time when given a problem description, dropping significantly without it [7]
  - Code correction ratio improved by up to 23 percentage points simply by including intent in the prompt
  - Without a specification, reviewers default to syntactic checks and miss semantic failures, code that runs but does the wrong thing
  - The same gap applies to human reviewers who skip reading comments before assessing logic
@@ -330,7 +330,7 @@ Review the generate () function in fingerprint.py and tell me if there are any b
 
 ---
 
-### Guideline 8: Write Structured Review Comments
+### Guideline 8: Write Structured Review Comments [2]
 
 **Description:**
 
@@ -340,7 +340,7 @@ Every issue you find should be reported in a consistent format that includes the
 ---
 
 **Reasoning:**
- - Practitioners rate review comments on three dimensions: Relevance, Information completeness, and Explanation clarity [15].
+ - Practitioners rate review comments on three dimensions: Relevance, Information completeness, and Explanation clarity [2].
  - Comments missing any one of these three dimensions are considered low quality by real developers.
  - Structured comments reduce back-and-forth between reviewer and author; the fix is self-contained.
  - When asking Copilot to review code, requesting this format in your prompt directly improves the quality of its output.
@@ -374,7 +374,7 @@ Can you check the crash_dedup code and tell me if there are any problems?
 ```
 
 ---
-### Guideline 9: Categorize Every Issue Before Suggesting a Fix
+### Guideline 9: Categorize Every Issue Before Suggesting a Fix [4]
 
 **Description:**
 
@@ -391,7 +391,7 @@ Label each finding with its category and priority:
 ---
 
 **Reasoning:**
- - Analysis of 1,600 GPT-assisted pull requests found developers structure their reviews around three task types: Enhancement (60%), Bug Fix (26%), and Documentation (12%) [14].
+ - Analysis of 1,600 GPT-assisted pull requests found developers structure their reviews around three task types: Enhancement (60%), Bug Fix (26%), and Documentation (12%) [4].
  - Conflating these leads to unfocused reviews where critical bugs get buried alongside minor style suggestions.
  - Labelling by category and priority forces the reviewer to make an explicit triage decision on every finding.
  - It also helps the author of the code understand what must be addressed before merging versus what is optional.
@@ -418,7 +418,7 @@ Label each finding with its category and priority:
 Review crash_dedup/ and suggest improvements.
 ```
 ---
-### Guideline 10: Verify Every Suggested Fix Against Existing Tests
+### Guideline 10: Verify Every Suggested Fix Against Existing Tests [7]
 
 **Description:**
 
@@ -427,7 +427,7 @@ Description: Before accepting any change suggested by Copilot, check that it doe
 ---
 
 **Reasoning:**
- - Up to 24.8% of AI-suggested code improvements introduced regressions, breaking previously correct behaviors [13].
+ - Up to 24.8% of AI-suggested code improvements introduced regressions, breaking previously correct behaviors [7].
  - Exception handling fixes are the most common regression source, adding try/except can mask real failures.
  - Fixes involving shared state (like the unbounded_cache in deduplicator.py) can affect multiple code paths in unexpected ways.
  - A fix that passes a casual read but breaks a passing test is not ready to merge, regardless of how confident Copilot sounds.
@@ -452,21 +452,21 @@ Fix all the bugs you found in crash_dedup/ project
 ```
 ---
 
-### Guideline 11: Issues That Require Human Judgment
+### Guideline 11: Issues That Require Human Judgment [2][7][13][14]
 
 **Description:**
 
 Even with well-structured prompts and guidelines, certain issues cannot be fully resolved by AI alone:
- - Cihan et al. [13] found LLMs failed to correctly assess code correctness in roughly 1 in 3 cases, leading to their proposed Human-in-the-Loop process.
- - Szymanski et al. [16] found that LLM-judge agreement with subject-matter experts ranges only 60-68% on domain-specific tasks.
- - Wang et al. [17] showed LLMs fall short on security, architecture, and regulatory decisions even when prompts are well-structured
+ - Cihan et al. [7] found LLMs failed to correctly assess code correctness in roughly 1 in 3 cases, leading to their proposed Human-in-the-Loop process.
+ - Szymanski et al. [13] found that LLM-judge agreement with subject-matter experts ranges only 60-68% on domain-specific tasks.
+ - Wang et al. [14] showed LLMs fall short on security, architecture, and regulatory decisions even when prompts are well-structured
  - Copilot can detect the symptoms of an issue, but a human must assess the context, risk, and consequences before making the final call
 ---
 
 **Tasks for Human Evaluation:**
 1.	**Manual inspection:** Carefully review each remaining failing test and trace the bug to the exact function and line of code.
 2.	**Root cause analysis:** For each remaining bug, explain why the LLM failed to detect it.
-3.	**Targeted prompting:** For each remaining issue, craft a precise, targeted prompt that guides the LLM to the specific fix. This models the Review Responsible role from Haider et al[15].
+3.	**Targeted prompting:** For each remaining issue, craft a precise, targeted prompt that guides the LLM to the specific fix. This models the Review Responsible role from Haider et al[2].
 4.	**Apply final fixes:** Fix all remaining issues so that the complete test suite passes.
 5.	**Final verification:** Run the full test suite and confirm 100% pass rate.
 
@@ -480,6 +480,7 @@ Even with well-structured prompts and guidelines, certain issues cannot be fully
 [2] Haider, Md Asif, et al. "Prompting and fine-tuning large language models for automated code review comment generation." arXiv preprint arXiv:2411.10129 (2024).
 
 [3] Aðalsteinsson, Fannar Steinn, et al. "Rethinking code review workflows with llm assistance: An empirical study." 2025 ACM/IEEE International Symposium on Empirical Software Engineering and Measurement (ESEM). IEEE, 2025.
+
 [4] Collante, Antonio, et al. "The Impact of Large Language Models (LLMs) on Code Review Process." arXiv preprint arXiv:2508.11034 (2025).
 
 [5] Kawalerowicz, Marcin, Marcin Pietranik, and Krzysztof Stępniak. "LLMs as Code Review Agents: A Rapid Review and Experimental Evaluation with Human Expert Judges." International Conference on Computational Collective Intelligence. Cham: Springer Nature Switzerland, 2025.
@@ -498,15 +499,9 @@ Even with well-structured prompts and guidelines, certain issues cannot be fully
 
 [12] Qian, Callan Lamb Christoph Hamsen, Julien Doutre, Jason Foral, Kassen. “Detecting Malicious Pull Requests at Scale With LLMs | Datadog.” Datadog, 21 Oct. 2025, www.datadoghq.com/blog/engineering/malicious-pull-requests.
 
-[13] Cihan, B., Noack, A., Cihan, T., & Buhnova, B. (2025). Evaluating Large Language Models for Code Review. arXiv preprint arXiv:2505.20206. Available at: https://arxiv.org/abs/2505.20206
+[13] Szymanski, M. et al. (2024). Limitations of the LLM-as-a-Judge Approach for Evaluating LLM Outputs in Expert Knowledge Tasks. In Proceedings of the 30th International Conference on Intelligent User Interfaces (IUI 2025). ACM. DOI: 10.1145/3708359.3712091. Available at: https://dl.acm.org/doi/10.1145/3708359.3712091
 
-[14] Collante, M. et al. (2025). GPT Impact on Pull Request Workflow. (Based on empirical analysis of GPT-assisted pull requests on GitHub.)
-
-[15] Haider, M. A., Mostofa, A. B., Mosaddek, S. S. B., & Islam, M. R. (2024). Prompting and Fine-tuning Large Language Models for Automated Code Review Comment Generation. arXiv preprint arXiv:2411.10129. Available at: https://arxiv.org/abs/2411.10129
-
-[16] Szymanski, M. et al. (2024). Limitations of the LLM-as-a-Judge Approach for Evaluating LLM Outputs in Expert Knowledge Tasks. In Proceedings of the 30th International Conference on Intelligent User Interfaces (IUI 2025). ACM. DOI: 10.1145/3708359.3712091. Available at: https://dl.acm.org/doi/10.1145/3708359.3712091
-
-[17] Wang, R., Guo, J., Gao, C., Fan, G., Chong, C. Y., & Xia, X. (2025). Can LLMs Replace Human Evaluators? An Empirical Study of LLM-as-a-Judge in Software Engineering. arXiv preprint arXiv:2502.06193. Available at: https://arxiv.org/abs/2502.06193
+[14] Wang, R., Guo, J., Gao, C., Fan, G., Chong, C. Y., & Xia, X. (2025). Can LLMs Replace Human Evaluators? An Empirical Study of LLM-as-a-Judge in Software Engineering. arXiv preprint arXiv:2502.06193. Available at: https://arxiv.org/abs/2502.06193
 
 
 ---
