@@ -158,7 +158,7 @@ Writing meaningless test cases just for a high branch coverage and mutation scor
 
 ---
 
-### Guideline 3: Use a Structured, Context-First Review Prompt
+### Guideline 3: Use a Structured, Context-First Review Prompt [3][7]
 
 **Description:**
 
@@ -186,7 +186,7 @@ Review this pull request and suggest improvements.
 
 ----
 
-### Guideline 4: Require Evidence-Grounded Justification Before Accepting LLM Claims
+### Guideline 4: Require Evidence-Grounded Justification Before Accepting LLM Claims [3]
 **Description:**
 
 When prompting an LLM to evaluate tests or validate a reviewer comment, explicitly instruct it to cite specific line numbers, function names, or test cases as evidence before reaching a conclusion. Do not accept a finding unless the model can point to the exact code that supports it.
@@ -447,7 +447,7 @@ Writing meaningless test cases to inflate high test coverage.
 
 ---
 
-### Guideline 11: Issues That Require Human Judgment
+### Guideline 4: Issues That Require Human Judgment
 
 **Description:**
 
@@ -465,11 +465,6 @@ Even with well-structured prompts and guidelines, certain issues cannot be fully
 3.	**Targeted prompting:** For each remaining issue, craft a precise, targeted prompt that guides the LLM to the specific fix. This models the Review Responsible role from Haider et al[15].
 4.	**Apply final fixes:** Fix all remaining issues so that the complete test suite passes.
 5.	**Final verification:** Run the full test suite and confirm 100% pass rate.
-
----
-
-### Guideline N: [Short, Actionable Title]
-(Repeat the same structure for each guideline.)
 
 ---
 
@@ -538,11 +533,6 @@ Explicitly list the assumptions about what the system handles outside this PR (e
 ```text
 Review this PR and suggest improvements.
 ```
-
----
-
-### Guideline N: [Short, Actionable Title]
-(Repeat the same structure for each guideline.)
 
 ---
 
