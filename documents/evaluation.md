@@ -103,7 +103,89 @@ More details can be found on the National Vulnerability Database (NVD)'s officia
 
 #### Problem D.1: Usage Audit Feature PR Review
 
-**Evaluation Description:**
+**Good Prompt Example:**
+
+In `.github/instructions/typescript.instructions.md`, clearly identify testing and security expectations.
+
+```
+---
+applyTo: "**/*.ts"
+---
+# TypeScript Coding Standards
+This file defines our TypeScript coding conventions for Copilot code review.
+
+## Error Handling
+
+- Always handle promise rejections with `try/catch` or `.catch()`.
+- Use custom error classes for application-specific errors.
+
+## Security
+
+- Be extremely cautious with binary executables. Any binary executable should be avoided by default. 
+
+## Testing
+
+- Write unit tests for all exported functions.
+- Use [Jest](https://jestjs.io/) for all testing.
+- Name test files as `<filename>.test.ts`.
+
+## Example
+
+```typescript
+// Good
+interface User {
+  id: number;
+  name: string;
+}
+
+const fetchUser = async (id: number): Promise<User> => {
+  try {
+    // ...fetch logic
+  } catch (error) {
+    // handle error
+  }
+};
+
+// Bad
+interface user {
+  Id: number;
+  Name: string;
+}
+
+async function FetchUser(Id) {
+  // ...fetch logic, no error handling
+}
+```
+
+**Bad Prompt Example:**
+
+1. No instruction file provided. 
+2. Expectations for binary executables are not listed in a security-related section in the instruction. 
+
+**Good Output Example:**
+
+```
+...
+
+* The backend (usage.service.ts) uses a vendor-provided binary executable (audit_writer) to write audit events.
+TypeScript instructions explicitly warn to avoid binary executables by default for security reasons.
+* No unit tests were added for the new backend logic, especially for the audit endpoints.
+Instructions require unit tests for all exported functions, using Jest.
+* The code does not use custom error classes for application-specific errors; it relies on NestJS exceptions.
+Instructions recommend custom error classes for better error handling.
+* The frontend and backend changes are otherwise modular and follow naming conventions, code style, and error handling for promises.
+```
+
+**Bad Output Example:**
+
+```
+...
+
+Conclusion
+This PR is well-structured and achieves the goal of integrating a vendor-supplied audit workflow. The encapsulation of vendor logic is appropriate for compliance. The API and UI changes are clear and functional. With minor improvements to error handling and security, this is ready to merge.
+```
+
+**Why it's bad:**
 
 The most severe issue contained in this PR is that, the binary executable file under the folder `problem_d/problem_d_backend/src/vendor` called `audit_writer` is simulating some malicious behaviours. Don't worry though, it's not really malicious, you can find the file in the `audit_writer-file` branch. All it does is to create a data record with a message: `This is a malicious event in the binary file, your database is now compromised`. However, the real security concern is not the message itself. The core issue is that: A precompiled binary executable has been committed directly into the repository and invoked by backend logic!
 
@@ -146,7 +228,150 @@ No frontend tests for the new audit panel UI and event handlers
 
 #### Problem D.2: Annual Report Generation PR Review
 
-**Evaluation Description:**
+**Good Prompt Example:**
+
+1. In `.github/instructions/typescript.instructions.md`, clearly identify naming convention expectations and code style expectations.
+
+```
+---
+applyTo: "**/*.ts"
+---
+# TypeScript Coding Standards
+This file defines our TypeScript coding conventions for Copilot code review.
+
+## Naming Conventions
+
+- Use `camelCase` for variables and functions.
+- Use `PascalCase` for class and interface names.
+- Prefix private variables with `_`.
+
+## Code Style
+
+- Prefer `const` over `let` when variables are not reassigned.
+- Use arrow functions for anonymous callbacks.
+- Avoid using `any` type; specify more precise types whenever possible.
+- Limit line length to 100 characters.
+
+## Error Handling
+
+- Always handle promise rejections with `try/catch` or `.catch()`.
+- Use custom error classes for application-specific errors.
+
+## Security
+
+- Be extremely cautious with binary executables. Any binary executable should be avoided by default. 
+
+## Testing
+
+- Write unit tests for all exported functions.
+- Use [Jest](https://jestjs.io/) for all testing.
+- Name test files as `<filename>.test.ts`.
+- All test cases should pass. 
+- Test coverage should reach at least 70%.
+
+## Example
+
+```typescript
+// Good
+interface User {
+  id: number;
+  name: string;
+}
+
+const fetchUser = async (id: number): Promise<User> => {
+  try {
+    // ...fetch logic
+  } catch (error) {
+    // handle error
+  }
+};
+
+// Bad
+interface user {
+  Id: number;
+  Name: string;
+}
+
+async function FetchUser(Id) {
+  // ...fetch logic, no error handling
+}
+```
+
+2. In `.github/semgrep.yml`, clearly formulated static anlysis scan patterns for detecting camelCases, PascalCases, and `any` abuse.
+
+For example:
+
+```
+  - id: typescript-camelcase-functions
+    message: "Use camelCase for function names."
+    languages: [typescript]
+    severity: WARNING
+    patterns:
+      - pattern: "function $F(...) { ... }"
+      - metavariable-regex:
+          metavariable: "$F"
+          regex: "(^[A-Z]|.*_.*)"
+```
+
+or
+
+```
+  - id: typescript-no-any
+    message: "Avoid 'any' in TypeScript. Use a specific type or 'unknown'."
+    languages: [typescript]
+    severity: WARNING
+    pattern-either:
+      - pattern: "const $X: any = $Y"
+      - pattern: "let $X: any = $Y"
+      - pattern: "var $X: any = $Y"
+      - pattern: "($P: any) => $BODY"
+      - pattern: "function $F($P: any, ...$REST) { ... }"
+      - pattern: "function $F(...$ARGS: any[]) { ... }"
+      - pattern: "class $C { $K: any; }"
+      - pattern: "function $F(...$ARGS): any { ... }"
+      - pattern: "$M(...$ARGS): any { ... }"
+```
+
+etc. 
+
+**Bad Prompt Example:**
+
+1. No instruction file provided. 
+2. Expectations for testing are not listed in the instruction file.
+3. Static Analysis Tool is not used. 
+
+**Good Output Example:**
+
+```
+...
+Fix the unit test expectation:
+  In problem_d/problem_d_backend/src/modules/reports/reports.service.spec.ts change
+    expect(result.year).toBe(2026);
+  to expect(result.year).toBe(2025);
+Rationale: align test with input and service behavior.
+...
+Minor code style: RenderReport and LoadReport use any heavily. Consider adding stronger types.
+...
+Variable naming:
+Rename EndDate → endDate in reports.service.ts for consistency.
+...
+Decision
+
+Recommendation: Request Changes (do not accept yet).
+Rationale: The feature is coherent and valuable, but there are at least one concrete test bug (inconsistent expected year), questionable dependency/tsconfig changes for React (likely accidental), usability/security improvements (XSS risk from innerHTML, missing auth), and some small code-quality items (naming, HTTP error semantics). These should be addressed before merging.
+```
+
+**Bad Output Example:**
+
+```
+...
+Decision
+Accept — The PR is well-structured, implements the requested feature, and includes tests. Minor issues are not blockers and can be addressed in future PRs.
+
+Recommendation: Merge this PR. Consider reviewing the year logic and dependency choices in a follow-up.
+```
+
+**Why it's bad:**
 TypeScript is a superset of JavaScript, and it adds static typing and compile-time checks on top of JavaScript, which offers compile-time guarantees, early error detection, and safer refactoring. Therefore, when TypeScript developers bypass the type system by abusing the `any` type, it could cause the guarantee provided by TS collapse to JS-level safety. That undermines the primary reason for choosing TypeScript in the first place. 
 
 And there are other naming conventions in TypeScript like using `camelCase` for variables and functions, and use `PascalCase` for class and interface names. This is for better consistency, readibility and maintainability across the codebase. 
@@ -184,7 +409,7 @@ And there are other naming conventions in TypeScript like using `camelCase` for 
 
 Try to think about:
 - Did the LLM-assisted PR review tool catch all these? Why or why not?
-- The static analysis tool only caught 21, why do you think this happened (See PR #11 -> Files changed)?
+- The static analysis tool using our heuristic only caught 21, why do you think this happened (See [PR #11 -> Files changed](https://github.com/U70-TK/cs846-presentation-winter-26/pull/11/changes))?
 
 **Criteria 2:** And your solution is good if you catch more or all naming convention violations:
 
@@ -206,18 +431,7 @@ Try to think about:
 The test case at line 54 of the file `problem_d/problem_d_backend/src/modules/reports/reports.service.spec.ts` will not pass: `expect(result.year).toBe(2026);`. 
 
 
-
-
-
-
-
-
-
-
 ## 3. References
-
-[1]  
-[2] 
 
 ---
 

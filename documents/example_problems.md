@@ -84,7 +84,7 @@ After completing B1 and B2, review functional correctness and PR-constraint alig
 **Task Description:**  
 Navigate to `problem_c/`. The `problem_c/before/` folder contains the dependency files `package.json` and `package-lock.json` before the pull request, and the `problem_c/after` folder contains the dependency files `package.json` and `package-lock.json` after the pull request. Please review from a software supply-chain perspective and verify that the update does not introduce supply-chain risk. 
 
-Write your response in the form of a list of findings in bullet points. 
+Write your response in the form of a list of findings in bullet points. End with a merge decision (`Approve`, `Request Changes`, or `Reject`) based on all prior considerations.
 
 ---
 
@@ -139,7 +139,7 @@ npm run dev
 **Task Description:**  
 This change integrates a vendor-supplied audit component that is required by the internal usage audit workflow. The underlying audit logic is encapsulated and not exposed at the application layer, as it contains vendor-specific implementation details and compliance logic that should remain internal.
 
-Please review the Pull Request. List your findings and follow-up questions to the PR owner. 
+Please review the Pull Request. List your findings and follow-up questions to the PR owner. End with a merge decision (`Approve`, `Request Changes`, or `Reject`) based on all prior considerations.
 
 **Starter Code:**  
 The code containing the feature is on branch `feat-audit`, and the PR related to this task is #10. Please review the code first and test it in your browser if you want. 
@@ -156,7 +156,7 @@ To show the annual report at the frontend, this PR does the following:
 - Wired the frontend “Company Briefing” section to fetch the report from the backend.
 - Set up Jest in the backend and added unit tests for the report service.
 
-Please review the Pull Request. List your findings and follow-up questions to the PR owner. 
+Please review the Pull Request. List your findings and follow-up questions to the PR owner. End with a merge decision (`Approve`, `Request Changes`, or `Reject`) based on all prior considerations.
 
 **Starter Code:**
 The code containing the feature is on the branch `feat-report`, and the PR related to this task is #15. Please review the code first and test it in your browser if you want. PR #11 is a demo for one of our guidelines. Please do not look at it at this point.
