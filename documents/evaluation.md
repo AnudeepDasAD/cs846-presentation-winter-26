@@ -7,8 +7,6 @@
 
 This section defines how students can determine whether they solved the example problems correctly.
 
-Criteria should be applicable to any problem in this topic.
-
 - **Groundedness in Code Evidence:** Check whether the model’s findings are supported by specific references to files, functions, or line numbers in the code.
 
 - **Scope and Constraint Adherence:** Assess whether the model follows the prompt constraints and avoids raising issues that are explicitly out of scope.
