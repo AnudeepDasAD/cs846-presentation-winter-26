@@ -276,8 +276,8 @@ I am reviewing a pull request. Below is the diff and PR description. [diff] [PR_
 - Mitigations are concrete and tied to the specific lines identified.
 - Does not suggest architectural redesigns or out-of-scope changes.
 
-### Why This Is Better
-By stating assumptions and non-goals upfront, the LLM stayed within the actual scope of the PR. The findings are immediately actionable because each one is anchored to a specific location in the code. The output is shorter and more precise, a reviewer can act on it directly without filtering out noise.
+<!-- ### Why This Is Better
+By stating assumptions and non-goals upfront, the LLM stayed within the actual scope of the PR. The findings are immediately actionable because each one is anchored to a specific location in the code. The output is shorter and more precise, a reviewer can act on it directly without filtering out noise. -->
 
 ---
 
@@ -327,8 +327,8 @@ I am reviewing a pull request. Below is the diff, PR description, and test file.
 - Minimum tests list contains 5 targeted items, all tied directly to gaps identified in the diff.
 - Does not suggest out-of-scope tests (JWT, RBAC, SQL injection).
 
-### Why This Is Better
-By requiring line-level evidence, the LLM caught a subtle misleading test that the naive prompt missed entirely — the test that *documents* ID exposure while *implying* it should be hidden. The minimum tests list is genuinely minimal because the LLM could only include items it could justify with a specific line, which filtered out the generic suggestions that appeared in the naive output.
+<!-- ### Why This Is Better
+By requiring line-level evidence, the LLM caught a subtle misleading test that the naive prompt missed entirely — the test that *documents* ID exposure while *implying* it should be hidden. The minimum tests list is genuinely minimal because the LLM could only include items it could justify with a specific line, which filtered out the generic suggestions that appeared in the naive output. -->
 
 ---
 
@@ -374,9 +374,9 @@ I am validating a peer review comment against a pull request. Here is the diff, 
 - Explains the mechanism precisely: FastAPI executes the dependency regardless of whether the return value is used, so assigning to `_` does not bypass enforcement.
 - Classification (`Inaccurate`) is consistent with the reasoning, no contradiction.
 - Recommended follow-up is concrete and scoped: reject the claim, no code change needed, optionally clarify in comments.
-
+<!-- 
 ### Why This Is Better
-By requiring the LLM to quote the relevant lines before reaching a verdict, the output is self-consistent and immediately verifiable, a reviewer can check the quoted lines themselves and confirm the reasoning. The naive output reached the same general conclusion but contradicted itself, making it untrustworthy. The guided output is actionable: a reviewer can reject the comment confidently and explain why with specific evidence.
+By requiring the LLM to quote the relevant lines before reaching a verdict, the output is self-consistent and immediately verifiable, a reviewer can check the quoted lines themselves and confirm the reasoning. The naive output reached the same general conclusion but contradicted itself, making it untrustworthy. The guided output is actionable: a reviewer can reject the comment confidently and explain why with specific evidence. -->
 
 ---
 
@@ -425,8 +425,8 @@ I am reviewing a pull request. Below is the diff and PR description. [diff] [PR_
 - Does not re-raise security or test concerns from earlier passes.
 - Merge decision ("Request Changes") is justified specifically by the two correctness findings, making it easy to trace back to the evidence.
 
-### Why This Is Better
-The context summary forced the LLM to read and understand the full scope of the PR before issuing findings. This is what surfaced the `database.py` migration bug and the seed normalization gap, both of which require understanding what the PR intends before you can identify where it falls short. The naive prompt skipped this step entirely and missed the most technically substantive issues in the diff.
+<!-- ### Why This Is Better
+The context summary forced the LLM to read and understand the full scope of the PR before issuing findings. This is what surfaced the `database.py` migration bug and the seed normalization gap, both of which require understanding what the PR intends before you can identify where it falls short. The naive prompt skipped this step entirely and missed the most technically substantive issues in the diff. -->
 
 ---
 
