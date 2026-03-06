@@ -6,33 +6,43 @@
 
 ## 1. Example Problems
 
-### Problem A_1: [Title]
+### Problem A: Understanding the Code Review Process
+**Model to Use:** GPT-4.1
+### Problem Description
+
+You are given crash-dedup, which deduplicates crash reports from distributed systems by grouping repeated crashes into a single entry so developers can focus on unique issues. The project consists of four modules: fingerprint.py, which generates MD5 fingerprints from stack traces; deduplicator.py, which groups crashes based on similarity; storage.py, which stores and retrieves reports using SQLite; and analyzer.py, which computes crash frequency statistics and generates reports.
+
+Setup: run once before starting: pip install -r requirements.txt
+Use the GPT-4 model for this problem
+
+### Problem A_1: Verify the Program
 
 **Task Description:**  
-Describe the task clearly and precisely.
+Execute the existing test suite for the project. Record the number of tests that pass and fail and document any error messages or failures observed during execution. For testing, use python -m pytest tests/ -v.
 
 **Starter Code:**  
-// Include all necessary starter code here or in a repo and share the link.
+See all files inside the crash_dedup/ folder and the tests/ folder in the problem_a project directory.
 
 ---
 
-### Problem A_2: [Title]
+### Problem A_2: Code Review: Identify Bugs and Issues with GitHub Copilot
 
 **Task Description:**  
-Describe the task clearly and precisely.
+Use GitHub Copilot Chat to review all files in the crash_dedup/ directory. Ask Copilot to review the code as an experienced software engineer would in a pull request. Your report should document the AI’s findings, including an overall verdict (Approve, Request Changes, or Reject), a list of identified bugs with their locations and proposed fixes, any security vulnerabilities, and missing or insufficient documentation. 
+
 
 **Starter Code:**  
-// Include all necessary starter code here or in a repo and share the link.
+See all files inside the crash_dedup/ folder and the tests/ folder in the problem_a project directory.
 
 ---
 
-### Problem A_n: [Title]
+### Problem A_3: Code Review: Quality & Improvement Analysis
 
 **Task Description:**  
-Describe the task clearly and precisely.
+Use GitHub Copilot Chat to review the code in the crash_dedup/ directory. Ask Copilot to evaluate the correctness, code quality, comment quality, code style, and security aspects of the code. For each issue identified, categorize it as Bug Fix, Documentation, and indicate any cases that cannot be detected by the Copilot prompt.
 
 **Starter Code:**  
-// Include all necessary starter code here or in a repo and share the link.
+See all files inside the crash_dedup/ folder and the tests/ folder in the problem_a project directory.
 
 ---
 
