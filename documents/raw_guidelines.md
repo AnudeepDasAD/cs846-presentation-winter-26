@@ -132,7 +132,10 @@ A good static analysis pattern definition should find a balance in between, and 
 
 **Bad Example:**
 
-Static analysis patterns being too broad or too strict. 
+Static analysis patterns being too broad or too strict. Either:
+
+- Too many false positives are captured, or
+- Didn't catch any useful things.
 
 
 #### Guideline 2.3 Enforce Test Coverage
