@@ -147,7 +147,7 @@ While static analysis and dependency scanning catch structural and known vulnera
 
 **Good Example:**
 
-Ensure good testing principles like Blackbox testing, Whitebox testing, MC/DC testing, mutation test etc, in alignment with project-specific conventions and risk expectations. Establish a team-wide test coverage as a threshold. 
+Ensure the PR followed good testing principles introduced in `Week 9 - Testing` on Learn. The test suite should be reviewed as a first-class component of the pull request, not as an afterthought. Enforce a team-wide test coverage as a threshold and integrate it into GitHub Actions. 
 
 **Bad Example:**
 
