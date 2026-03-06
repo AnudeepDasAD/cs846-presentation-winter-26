@@ -17,33 +17,188 @@ Criteria should be applicable to any problem in this topic.
 
 ## 2. Evalation specifically for Example Problems
 
-### Problem A_1: [Title]
+<!-- ### Problem A_1: Verify the Program
 
 **Evaluation Description:**  
 Describe the evaluation criteria clearly and precisely.
 
 **Code:**  
 // Include all necessary code here that is the correct answer.
+
+--- -->
+
+### Problem A_2: Code Review: Identify Bugs and Issues with GitHub Copilot
+
+**Evaluation Description:**  
+ - Provides the library's intended behaviour upfront, ensuring Copilot reviews against a specification rather than just scanning for syntax errors
+ - Enforces a consistent four-part format for every finding: location, problem, impact, and suggested fix
+ - Organises output into six sections, separating critical bugs from security issues, quality concerns, and documentation gaps
+ - Requires a concrete verdict with justification, forcing an  - overall judgment on whether the code is ready to merge
+Includes a regression risk section, ensuring every suggested fix is evaluated against currently correct behaviour
+
+## Good Example
+
+### Prompt Used
+```
+You are an experienced software engineer performing a formal pull request review of the crash-dedup Python project. This library groups repeated crash reports from the same bug into a single entry, even if dynamic values like IP addresses or timestamps differ between reports.
+
+Review ALL files in the crash_dedup/ directory and report every issue using exactly this format:
+  File + function + line →  What the problem is → Why it matters  →  Suggested fix
+
+Generate a report with EXACTLY these sections:
+
+## 1. OVERALL VERDICT
+Approve | Request Changes | Reject with a justification.
+
+## 2. CRITICAL BUGS
+Correctness failures, crashes, and wrong output.
+
+## 3. SECURITY VULNERABILITIES
+Severity: Critical / High / Medium.
+
+## 4. CODE QUALITY ISSUES
+Naming, structure, error handling, duplication.
+
+## 5. MISSING DOCUMENTATION
+Functions or classes with no or inadequate docstrings.
+
+## 6. REGRESSION RISKS
+For every fix you suggest, identify what is currently correct behavior that it might break.
+```
+
+## Good Example Output
+
+| **Section**              | **Details**                                                                                     |
+|--------------------------|-------------------------------------------------------------------------------------------------|
+| **Overall Verdict**      | **Request Changes**: The project has a solid foundation but contains critical issues to address. |
+| **Critical Bugs**        | - **File: analyzer.py + get_crash_rate + Line 35** → Division by zero when `window_seconds` is 0. This can crash the entire analysis pipeline with a `ZeroDivisionError`. Suggested fix: Add a guard clause: `if window_seconds == 0: raise ValueError("window_seconds must be > 0")`. |
+|                          | - **File: analyzer.py + get_error_distribution + Line 53** → Division by zero when `crash_groups` is empty or all groups have zero members. This causes a `ZeroDivisionError`. Suggested fix: Return an empty dictionary when `total == 0`. |
+|                          | - **File: deduplicator.py + add_crash + Line 27** → No eviction policy for `_cache`. This causes a memory leak in long-running processes. Suggested fix: Implement an eviction policy (e.g., LRU cache). |
+|                          | - **File: deduplicator.py + add_crash + Line 69** → Uses `>` instead of `>=` for similarity threshold. This creates spurious new groups for boundary cases. Suggested fix: Change the condition to `>=`. |
+|                          | - **File: fingerprint.py + normalize_message + Line 71** → Incomplete normalization (e.g., misses UUIDs, timestamps, IPs). This reduces deduplication accuracy. Suggested fix: Extend normalization to handle UUIDs, ISO timestamps, and IP addresses. |
+|                          | - **File: storage.py + Line 30** → Single SQLite connection shared across threads. This can corrupt the database under concurrent load. Suggested fix: Use `check_same_thread=False` and external locking. |
+| **Security Vulnerabilities** | - **Severity: Critical** **File: config.py + Line 18** → Hardcoded API key `ALERT_API_KEY`. This exposes sensitive information in the codebase. Suggested fix: Move secrets to environment variables or a secrets manager. |
+|                          | - **Severity: Critical** **File: config.py + Line 21** → Hardcoded admin password `ADMIN_PASSWORD`. This exposes sensitive information in the codebase. Suggested fix: Move secrets to environment variables or a secrets manager. |
+|                          | - **Severity: High** **File: fingerprint.py + generate + Line 37** → Uses MD5 for fingerprinting. MD5 is cryptographically broken and unsuitable for deduplication. Suggested fix: Use SHA-256 or another modern hash function. |
+| **Code Quality Issues**  | - **File: fingerprint.py + generate + Line 48** → Includes raw error messages (e.g., IPs) in the fingerprint. Dynamic values cause identical crashes to produce different fingerprints. Suggested fix: Normalize error messages before hashing. |
+|                          | - **File: analyzer.py + get_error_distribution + Line 53** → Returns `ZeroDivisionError` when no crashes exist. This is an unhandled edge case that can crash the program. Suggested fix: Return an empty dictionary when `total == 0`. |
+| **Missing Documentation**| - Lack of docstrings for critical functions.                                                    |
+|                          | - Missing explanations for normalization behavior and risks of division by zero.                |
+| **Regression Risks**     | - Fixes may break existing workflows relying on current behavior.                                |
+|                          | - Adding eviction policies may increase latency for rarely used data.                           |
+|                          | - Parameterized queries may affect scripts relying on current query formats.                    |
+
+
+## Bad Example
+
+### Prompt Used
+```
+This code appears to be well-structured and looks fine to me. Please perform a quick check of crash_dedup/ and report any issues with deduplication. Also, indicate whether the code is functioning correctly or not.
+```
+
+## Bad Example Output
+### Problems with Deduplication
+
+1. **Dynamic Values in Fingerprints**:
+   - **File:** `fingerprint.py`, **Line:** 48
+   - **Issue:** Raw error messages (e.g., IPs) are included in fingerprints, which can cause identical crashes to produce different fingerprints.
+   - **Fix:** Normalize error messages before hashing.
+
+2. **Incomplete Normalization**:
+   - **File:** `fingerprint.py`, **Line:** 71
+   - **Issue:** Normalization misses UUIDs, timestamps, and IPs, reducing deduplication accuracy.
+   - **Fix:** Extend normalization to handle these dynamic values.
+
+3. **Use of MD5 for Fingerprinting**:
+   - **File:** `fingerprint.py`, **Line:** 37
+   - **Issue:** MD5 is cryptographically broken and unsuitable for deduplication.
+   - **Fix:** Use SHA-256 or another modern hash function.
+
+### Why This Is Weak
+The bad prompt didn't just produce fewer results; it gave a false verdict. In conclusion, the code seems to work as intended, but SQL injection vulnerabilities are present in storage.py, which is more dangerous than returning no output at all. This directly aligns with Cihan et al. (2025): without proper context and structure, LLM reviewers tend to rely on surface-level checks and can even mislead the reviewer into a false sense of confidence. 
+---
+
+### Problem A_3: Code Review: Quality & Improvement Analysis
+
+**Evaluation Description:**  
+This evaluation instructs Copilot to perform a deep code quality audit with a structured, prioritised output. Every finding is categorised, prioritised, and assessed for regression risk, ensuring critical issues are separated from minor improvements.
+
+ - Requires every finding to be categorised as Bug Fix, Enhancement, or Documentation with an explicit priority level
+ - Produces a structured table output, making findings directly comparable and easy to triage
+ - Separates correctness analysis from security posture, ensuring neither is buried within the other
+ - Requires regression risk to be stated for every fix, preventing blind acceptance of AI suggestions
+ - Includes a Human Review Required section, explicitly flagging decisions that go beyond automated analysis
+
+## Good Example
+
+### Prompt Used
+```
+Perform a code quality audit of the crash_dedup/ Python package. For every issue you find, report it in this exact format and produce the output as a structured table:
+
+Category: BUG FIX | ENHANCEMENT | DOCUMENTATION
+Priority: P1 (block merge) | P2 (fix soon) | P3 (nice-to-have)
+File + function + line  →  What  →  Why it matters  →  Suggested fix  →  Regression risk (Low / Medium / High)
+
+Produce a report with EXACTLY these sections:
+
+## 1. CORRECTNESS
+For each function: does it produce the correct output for all valid inputs? List any incorrect or undefined behaviour with the exact input that triggers it.
+
+## 2. SECURITY POSTURE
+List every security weakness. For each: CWE category, severity, and exact location.
+
+## 3. IMPROVEMENT PLAN (prioritised table)
+List all P1 BUG FIX and SECURITY issues first, then P2, then P3. For every fix, explicitly state the regression risk and which currently passing tests could break if the fix is applied.
+
+## 4. HUMAN REVIEW REQUIRED
+List issues where an automated fix is INSUFFICIENT, and a human must make a context-dependent decision. Explain why AI alone cannot resolve each one.
+
+```
+
+### Characteristics of Output
+| **Category** | **Priority** | **File + Function + Line**                     | **What**                                                                 | **Why it matters**                                                                 | **Suggested Fix**                                                                 | **Regression Risk** |
+|--------------|--------------|-----------------------------------------------|--------------------------------------------------------------------------|-----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|---------------------|
+| BUG FIX      | P1           | `analyzer.py + get_crash_rate + Line 35`      | Division by zero when `window_seconds` is 0.                             | Crashes the analysis pipeline.                                                   | Add a guard clause: `if window_seconds == 0: raise ValueError("window_seconds must be > 0")`. | Low                 |
+| BUG FIX      | P1           | `analyzer.py + get_error_distribution + Line 53` | Division by zero when `crash_groups` is empty.                           | Crashes the program.                                                             | Return an empty dictionary when `total == 0`.                                     | Low                 |
+| BUG FIX      | P1           | `deduplicator.py + add_crash + Line 27`       | No eviction policy for `_cache`.                                         | Causes memory leaks in long-running processes.                                   | Implement an eviction policy (e.g., LRU cache).                                   | Medium              |
+| BUG FIX      | P1           | `deduplicator.py + add_crash + Line 69`       | Uses `>` instead of `>=` for similarity threshold.                       | Creates spurious new groups for boundary cases.                                  | Change the condition to `>=`.                                                     | Low                 |
+| BUG FIX      | P1           | `fingerprint.py + normalize_message + Line 71` | Incomplete normalization (e.g., misses UUIDs, timestamps, IPs).          | Reduces deduplication accuracy.                                                  | Extend normalization to handle UUIDs, ISO timestamps, and IP addresses.           | Medium              |
+| SECURITY     | P1           | `config.py + Line 18`                         | Hardcoded API key `ALERT_API_KEY`.                                       | Exposes sensitive information in the codebase.                                   | Move secrets to environment variables or a secrets manager.                       | Low                 |
+| SECURITY     | P1           | `config.py + Line 21`                         | Hardcoded admin password `ADMIN_PASSWORD`.                               | Exposes sensitive information in the codebase.                                   | Move secrets to environment variables or a secrets manager.                       | Low                 |
+| SECURITY     | P1           | `fingerprint.py + generate + Line 37`         | Uses MD5 for fingerprinting.                                             | MD5 is cryptographically broken and unsuitable for deduplication.                | Use SHA-256 or another modern hash function.                                      | Medium              |
+| BUG FIX      | P2           | `storage.py + Line 30`                        | Single SQLite connection shared across threads.                          | Can corrupt the database under concurrent load.                                  | Use `check_same_thread=False` and external locking.                               | High                |
 
 ---
 
-### Problem A_2: [Title]
+### 4. HUMAN REVIEW REQUIRED
+1. **`fingerprint.py + normalize_message + Line 71`**
+   - **Why AI cannot resolve**: Normalization rules for UUIDs, timestamps, and IPs require domain-specific knowledge to avoid over-normalization or data loss.
 
-**Evaluation Description:**  
-Describe the evaluation criteria clearly and precisely.
+2. **`deduplicator.py + add_crash + Line 27`**
+   - **Why AI cannot resolve**: Eviction policy design (e.g., LRU, LFU) depends on the application's specific requirements and usage patterns.
 
-**Code:**  
-// Include all necessary code here that is the correct answer.
-
+3. **`config.py + Line 18` and `Line 21`**
+   - **Why AI cannot resolve**: Moving secrets to environment variables or a secrets manager requires human intervention to set up the infrastructure securely.
 ---
 
-### Problem A_n: [Title]
+## Bad Example
 
-**Evaluation Description:**  
-Describe the evaluation criteria clearly and precisely.
+### Prompt Used
+```
+This code seems mostly fine; can you quickly go through  crash_dedup/ and fix anything that looks off? Also, suggest any improvements you think would help.
+```
 
-**Code:**  
-// Include all necessary code here that is the correct answer.
+### Bad Example Output
+*Correctness:* Issues like division by zero, memory leaks, and incomplete normalization were identified and addressed with suggested fixes.
+*Security Posture:* Hardcoded credentials and the use of MD5 were flagged as critical vulnerabilities, with recommendations to use environment variables and SHA-256.
+*Improvement Plan:* A prioritized table of fixes was provided, categorizing issues by severity and regression risk.
+*Human Review Required:* Specific areas requiring manual intervention were highlighted, such as normalization rules and secure infrastructure setup.
+
+Let me know if you need further edits or additional details!
+
+
+### Why This Is Weak
+It missed specific line numbers, all regression risks, the thread-safety architectural context, and the distinction between what requires human judgment versus what can be fixed automatically. A student acting on the bad output would believe the review is thorough when it is not, which is precisely the false confidence problem identified by Cihan et al. (2025).
 
 ---
 
