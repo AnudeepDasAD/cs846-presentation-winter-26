@@ -388,8 +388,6 @@ Label each finding with its category and priority:
  - P1: block merge, fix immediately
  - P2: fix soon after merge
  - P3: nice-to-have, low urgency
-
-
 ---
 
 **Reasoning:**
@@ -443,7 +441,7 @@ Description: Before accepting any change suggested by Copilot, check that it doe
  - Ask Copilot to state the regression risk for every fix it suggests: Low, Medium, or High.
  - Ask which currently-passing tests could break if each fix is applied.
  - Request a correctness section that tests each function against all valid inputs, not just the happy path .
- - Ask for an improvement plan that separates what to change from what risk that the change carries.
+ - Ask for an improvement plan that separates what to change based on the risks.
  - Ask Copilot to flag any fix that requires human judgment and cannot be resolved automatically.
 ```
 
@@ -454,7 +452,7 @@ Fix all the bugs you found in crash_dedup/ project
 ```
 ---
 
-### Guideline 11: Where Human Judgment Is Essential
+### Guideline 11: Issues That Require Human Judgment
 
 **Description:**
 
