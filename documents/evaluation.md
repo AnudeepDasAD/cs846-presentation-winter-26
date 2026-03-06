@@ -30,11 +30,12 @@ Describe the evaluation criteria clearly and precisely.
 ### Problem A_2: Code Review: Identify Bugs and Issues with GitHub Copilot
 
 **Evaluation Description:**  
- - Provides the library's intended behaviour upfront, ensuring Copilot reviews against a specification rather than just scanning for syntax errors
- - Enforces a consistent four-part format for every finding: location, problem, impact, and suggested fix
- - Organises output into six sections, separating critical bugs from security issues, quality concerns, and documentation gaps
- - Requires a concrete verdict with justification, forcing an  - overall judgment on whether the code is ready to merge
-Includes a regression risk section, ensuring every suggested fix is evaluated against currently correct behaviour
+This prompt: 
+ - Provides the library's intended behaviour upfront, ensuring Copilot reviews against a specification rather than just scanning for syntax errors.
+ - Enforces a consistent four-part format for every finding: location, problem, impact, and suggested fix.
+ - Organises output into six sections, separating critical bugs from security issues, quality concerns, and documentation gaps.
+ - Requires a concrete verdict with justification, forcing an overall judgment on whether the code is ready to merge.
+ - Includes a regression risk section, ensuring every suggested fix is evaluated against currently correct behaviour.
 
 ## Good Example
 
@@ -47,22 +48,22 @@ Review ALL files in the crash_dedup/ directory and report every issue using exac
 
 Generate a report with EXACTLY these sections:
 
-## 1. OVERALL VERDICT
+## OVERALL VERDICT
 Approve | Request Changes | Reject with a justification.
 
-## 2. CRITICAL BUGS
+## CRITICAL BUGS
 Correctness failures, crashes, and wrong output.
 
-## 3. SECURITY VULNERABILITIES
+## SECURITY VULNERABILITIES
 Severity: Critical / High / Medium.
 
-## 4. CODE QUALITY ISSUES
+## CODE QUALITY ISSUES
 Naming, structure, error handling, duplication.
 
-## 5. MISSING DOCUMENTATION
+## MISSING DOCUMENTATION
 Functions or classes with no or inadequate docstrings.
 
-## 6. REGRESSION RISKS
+## REGRESSION RISKS
 For every fix you suggest, identify what is currently correct behavior that it might break.
 ```
 
@@ -115,19 +116,19 @@ This code appears to be well-structured and looks fine to me. Please perform a q
    - **Fix:** Use SHA-256 or another modern hash function.
 
 ### Why This Is Weak
-The bad prompt didn't just produce fewer results; it gave a false verdict. In conclusion, the code seems to work as intended, but SQL injection vulnerabilities are present in storage.py, which is more dangerous than returning no output at all. This directly aligns with Cihan et al. (2025): without proper context and structure, LLM reviewers tend to rely on surface-level checks and can even mislead the reviewer into a false sense of confidence. 
+The bad prompt didn't just produce fewer results; it gave a false verdict. In conclusion, the code seems to work as intended, but SQL injection vulnerabilities are present in storage.py, which is more dangerous than returning no output at all. This directly aligns with Cihan et al. [13]: without proper context and structure, LLM reviewers tend to rely on surface-level checks and can even mislead the reviewer into a false sense of confidence. 
 ---
 
 ### Problem A_3: Code Review: Quality & Improvement Analysis
 
 **Evaluation Description:**  
-This evaluation instructs Copilot to perform a deep code quality audit with a structured, prioritised output. Every finding is categorised, prioritised, and assessed for regression risk, ensuring critical issues are separated from minor improvements.
+This evaluation instructs Copilot to perform a deep code quality audit with a structured, prioritized output. Every finding is categorised, prioritized, and assessed for regression risk, ensuring critical issues are separated from minor improvements.
 
- - Requires every finding to be categorised as Bug Fix, Enhancement, or Documentation with an explicit priority level
- - Produces a structured table output, making findings directly comparable and easy to triage
- - Separates correctness analysis from security posture, ensuring neither is buried within the other
- - Requires regression risk to be stated for every fix, preventing blind acceptance of AI suggestions
- - Includes a Human Review Required section, explicitly flagging decisions that go beyond automated analysis
+ - Requires every finding to be categorised as Bug Fix, Enhancement, or Documentation with an explicit priority level.
+ - Produces a structured table output, making findings directly comparable and easy to triage.
+ - Separates correctness analysis from security posture, ensuring neither is buried within the other.
+ - Requires regression risk to be stated for every fix, preventing blind acceptance of AI suggestions.
+ - Includes a Human Review Required section, explicitly flagging decisions that go beyond automated analysis.
 
 ## Good Example
 
@@ -135,22 +136,22 @@ This evaluation instructs Copilot to perform a deep code quality audit with a st
 ```
 Perform a code quality audit of the crash_dedup/ Python package. For every issue you find, report it in this exact format and produce the output as a structured table:
 
-Category: BUG FIX | ENHANCEMENT | DOCUMENTATION
-Priority: P1 (block merge) | P2 (fix soon) | P3 (nice-to-have)
+*Category:* BUG FIX | ENHANCEMENT | DOCUMENTATION
+*Priority:* P1 (block merge) | P2 (fix soon) | P3 (nice-to-have)
 File + function + line  →  What  →  Why it matters  →  Suggested fix  →  Regression risk (Low / Medium / High)
 
 Produce a report with EXACTLY these sections:
 
-## 1. CORRECTNESS
+## CORRECTNESS
 For each function: does it produce the correct output for all valid inputs? List any incorrect or undefined behaviour with the exact input that triggers it.
 
-## 2. SECURITY POSTURE
+## SECURITY POSTURE
 List every security weakness. For each: CWE category, severity, and exact location.
 
-## 3. IMPROVEMENT PLAN (prioritised table)
+## IMPROVEMENT PLAN (prioritised table)
 List all P1 BUG FIX and SECURITY issues first, then P2, then P3. For every fix, explicitly state the regression risk and which currently passing tests could break if the fix is applied.
 
-## 4. HUMAN REVIEW REQUIRED
+## HUMAN REVIEW REQUIRED
 List issues where an automated fix is INSUFFICIENT, and a human must make a context-dependent decision. Explain why AI alone cannot resolve each one.
 
 ```
@@ -198,7 +199,7 @@ Let me know if you need further edits or additional details!
 
 
 ### Why This Is Weak
-It missed specific line numbers, all regression risks, the thread-safety architectural context, and the distinction between what requires human judgment versus what can be fixed automatically. A student acting on the bad output would believe the review is thorough when it is not, which is precisely the false confidence problem identified by Cihan et al. (2025).
+It missed specific line numbers, all regression risks, the thread-safety architectural context, and the distinction between what requires human judgment versus what can be fixed automatically. A student acting on the bad output would believe the review is thorough when it is not, which is precisely the false confidence problem identified by Cihan et al.[13].
 
 ---
 
