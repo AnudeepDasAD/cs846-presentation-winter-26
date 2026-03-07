@@ -418,37 +418,40 @@ Label each finding with its category and priority:
 Review crash_dedup/ and suggest improvements.
 ```
 ---
-### Guideline 10: Verify Every Suggested Fix Against Existing Tests [7]
+### Guideline 10: Assess Regression Risk as Part of Every Review Decision [7]
 
 **Description:**
 
-Description: Before accepting any change suggested by Copilot, check that it does not break code that was previously working. A fix that resolves one bug while silently breaking another is worse than the original problem, as it introduces a regression that may not be visible until production. Always re-run the test suite against a proposed fix and pay particular attention to exception handling changes, which frequently swallow errors silently.
+When reviewing any proposed fix, whether written by a developer or suggested by Copilot assesses whether the change could break existing correct behavior. A reviewer must evaluate not just what the fix resolves, but what it might silently affect, particularly in exception handling, shared state, and boundary conditions. Regression risk is a judgment call that belongs in the review, not after it. A fix that introduces a new failure while resolving an existing one is worse than the original problem, as the new regression may not surface until production..
 
 ---
 
 **Reasoning:**
  - Up to 24.8% of AI-suggested code improvements introduced regressions, breaking previously correct behaviors [7].
- - Exception handling fixes are the most common regression source, adding try/except can mask real failures.
- - Fixes involving shared state (like the unbounded_cache in deduplicator.py) can affect multiple code paths in unexpected ways.
- - A fix that passes a casual read but breaks a passing test is not ready to merge, regardless of how confident Copilot sounds.
+ - Exception handling fixes are the most common regression source, adding `try/except` can mask real failures.
+ - Fixes involving shared state can affect multiple code paths simultaneously, making side effects difficult to predict from a local read alone.
+ - A fix that passes a casual review but breaks a passing test is not ready to merge, regardless of how confident Copilot sounds.
 ---
 
 **Examples:**
 
-**Good Example: Suggested Verification:**
+**Good Example: Regression-Aware Review Prompt:**
 
 ```text
- - Ask Copilot to state the regression risk for every fix it suggests: Low, Medium, or High.
- - Ask which currently-passing tests could break if each fix is applied.
- - Request a correctness section that tests each function against all valid inputs, not just the happy path .
- - Ask for an improvement plan that separates what to change based on the risks.
- - Ask Copilot to flag any fix that requires human judgment and cannot be resolved automatically.
+Review all files in the problem_a/ directory.
+
+For every fix you suggest, explicitly state:
+ - Regression risk: Low | Medium | High
+ - Which currently-passing tests could break if this fix is applied?
+ - Does this fix affect exception handling, shared state, or boundary conditions?
+
+Flag any fix as HUMAN REVIEW REQUIRED if the regression risk is High or if the fix affects shared state or exception handling.
 ```
 
-**Bad Example: No Verification**
+**Bad Example: No Regression**
 
 ```text
-Fix all the bugs you found in crash_dedup/ project
+Fix all the bugs you found in problem_a/ directory.
 ```
 ---
 
