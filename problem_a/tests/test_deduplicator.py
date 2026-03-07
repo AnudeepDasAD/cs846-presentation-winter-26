@@ -15,13 +15,13 @@ def make_crash(error_type="ValueError", message="bad value",
     }
 
 
-# ---------------------------------------------------------------------------
+
 # PASSING tests
-# ---------------------------------------------------------------------------
+
 
 def test_first_crash_creates_group():
     """
-    EXPECTED TO FAIL.
+  
 
     When a crash is ingested, the deduplicator should stamp it with a
     'processed_at' timestamp so downstream consumers can distinguish
@@ -35,7 +35,7 @@ def test_first_crash_creates_group():
     gid = d.add_crash(crash)
     assert gid is not None
     assert d.group_count() == 1
-    assert "processed_at" in crash, "Crash should be stamped with processing time"   # FAILS — field is never added
+    assert "processed_at" in crash, "Crash should be stamped with processing time"   # FAILS: field is never added
 
 
 def test_identical_crashes_share_group():
@@ -76,40 +76,31 @@ def test_multiple_unique_crashes_tracked():
     assert d.group_count() == 5
 
 
-# ---------------------------------------------------------------------------
+
 # FAILING tests  (document known bugs)
-# ---------------------------------------------------------------------------
+
 
 def test_cache_size_is_bounded():
     """
-    EXPECTED TO FAIL.
-
-    After processing many unique crashes the internal cache should not grow
-    beyond a configured limit (Config.MAX_CACHE_SIZE).
-
-    Root cause: _cache has no eviction policy; it grows without bound,
-    which is a memory leak in long-running processes.
+    After processing many unique crashes the internal cache should not grow beyond a configured limit (Config.MAX_CACHE_SIZE).
+    Root cause: _cache has no eviction policy; it grows without bound, which is a memory leak in long-running processes.
     """
     d = CrashDeduplicator()
     for i in range(500):
         d.add_crash(make_crash("ValueError", f"unique message {i}"))
     # Cache should stay bounded, but currently equals the number of unique fingerprints
-    assert len(d._cache) <= 100   # FAILS — cache has 500 entries
+    assert len(d._cache) <= 100   # FAILS: cache has 500 entries
 
 
 def test_similarity_metric_is_meaningful():
     """
-    EXPECTED TO FAIL.
 
-    compute_similarity() on two MD5 hashes from unrelated crashes should
-    return a low score (near 0).  The current character-positional comparison
-    of uniform hex strings is not a meaningful metric.
+    compute_similarity() on two MD5 hashes from unrelated crashes should return a low score (near 0).  The current character-positional comparison of uniform hex strings is not a meaningful metric.
 
-    This test shows that two completely different stack traces can score
-    above the SIMILARITY_THRESHOLD just by chance character overlap.
+    This test shows that two completely different stack traces can score above the SIMILARITY_THRESHOLD just by chance character overlap.
     """
     d = CrashDeduplicator()
-    # Two unrelated crashes — different type, different trace
+    # Two unrelated crashes: different type, different trace
     crash_a = make_crash("MemoryError", "out of memory",
                          '  File "allocator.py", line 99, in alloc')
     crash_b = make_crash("PermissionError", "access denied",

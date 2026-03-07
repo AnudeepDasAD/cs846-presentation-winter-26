@@ -1,8 +1,7 @@
 """
-deduplicator.py - Core crash grouping logic.
+deduplicator.py: Core crash grouping logic.
 
-Maintains a set of crash groups.  Each new crash is fingerprinted and
-either assigned to an existing group (duplicate) or starts a new one.
+Maintains a set of crash groups. Each new crash is fingerprinted and either assigned to an existing group (duplicate) or starts a new one.
 """
 
 import time
@@ -24,16 +23,16 @@ class CrashDeduplicator:
         self._groups: Dict[str, List[dict]] = {}
 
         # fingerprint  →  group_id  (fast lookup for exact repeats)
-        # BUG ❸ — no eviction policy; grows without bound.
+        # BUG ❸ : no eviction policy; grows without bound.
         # In a long-running process this is a memory leak: every unique
         # fingerprint ever seen remains in RAM forever.
         self._cache: Dict[str, str] = {}
 
         self._stats = {"total_received": 0, "new_groups": 0, "deduplicated": 0}
 
-    # ------------------------------------------------------------------
+    # Deduplication logic: fingerprinting, similarity, grouping
     # Public API
-    # ------------------------------------------------------------------
+ 
 
     def add_crash(self, crash_report: dict) -> str:
         """Fingerprint a crash report and assign it to a group.
@@ -66,7 +65,7 @@ class CrashDeduplicator:
         for group_id, members in self._groups.items():
             existing_fp = members[0].get("_fingerprint", "")
             if self.compute_similarity(fingerprint, existing_fp) > SIMILARITY_THRESHOLD:
-                # BUG ❹ — uses strict >  instead of  >=
+                # BUG ❹ : uses strict >  instead of  >=
                 # An exact match (similarity == 1.0) will still pass this check,
                 # but any boundary case at exactly 0.8 will be missed, creating
                 # a spurious new group when it should merge.
@@ -85,7 +84,7 @@ class CrashDeduplicator:
     def compute_similarity(self, fp1: str, fp2: str) -> float:
         """Return a similarity score in [0.0, 1.0] between two fingerprint strings.
 
-        BUG ❺ — This measures character-positional overlap of two MD5 hex strings.
+        BUG ❺ :This measures character-positional overlap of two MD5 hex strings.
         MD5 digests are *uniformly distributed* — two completely unrelated crashes
         will share ~1/16 characters by pure chance, giving a baseline ~0.0625.
         More critically, there is NO meaningful relationship between "similar
@@ -101,9 +100,9 @@ class CrashDeduplicator:
         matches = sum(c1 == c2 for c1, c2 in zip(fp1, fp2))
         return matches / max(len(fp1), len(fp2))
 
-    # ------------------------------------------------------------------
+ 
     # Accessors
-    # ------------------------------------------------------------------
+    
 
     def get_groups(self) -> Dict[str, List[dict]]:
         """Return all current crash groups."""

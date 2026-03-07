@@ -1,8 +1,7 @@
 """
-storage.py - SQLite-backed persistence for crash reports.
+storage.py: SQLite-backed persistence for crash reports.
 
-Provides save / search / retrieval operations.  Intended for single-process
-use in development and small deployments.
+Provides save / search / retrieval operations.  Intended for single-process use in development and small deployments.
 """
 
 import json
@@ -11,7 +10,7 @@ import sqlite3
 import time
 from typing import List, Optional
 
-# SECURITY ❶ — Hardcoded credentials committed to source control.
+# SECURITY ❶ : Hardcoded credentials committed to source control.
 # If this repository is ever public (or accessed by a contractor) these
 # values are permanently exposed, even after rotation, via git history.
 # Must be moved to environment variables or a secrets manager.
@@ -27,16 +26,16 @@ class CrashStorage:
 
     def __init__(self, db_path: str = DEFAULT_DB_PATH):
         self.db_path = db_path
-        # BUG ❻ — A single shared connection is not thread-safe.
+        # BUG ❻ : A single shared connection is not thread-safe.
         # sqlite3 connections must not be shared across threads unless
         # check_same_thread=False is set AND external locking is applied.
         # Under concurrent load this silently corrupts the database.
         self._conn: Optional[sqlite3.Connection] = None
         self._init_schema()
 
-    # ------------------------------------------------------------------
+
     # Internal helpers
-    # ------------------------------------------------------------------
+ 
 
     def _get_conn(self) -> sqlite3.Connection:
         if self._conn is None:
@@ -63,9 +62,9 @@ class CrashStorage:
         conn.execute("CREATE INDEX IF NOT EXISTS idx_type  ON crashes(error_type)")
         conn.commit()
 
-    # ------------------------------------------------------------------
+
     # Write operations
-    # ------------------------------------------------------------------
+  
 
     def save_crash(self, group_id: str, crash: dict) -> int:
         """Insert a crash record and return its auto-assigned row id."""
@@ -88,14 +87,14 @@ class CrashStorage:
         conn.commit()
         return cursor.lastrowid
 
-    # ------------------------------------------------------------------
+    
     # Read operations
-    # ------------------------------------------------------------------
+   
 
     def search_by_error_type(self, error_type: str) -> List[dict]:
         """Return all crashes matching the given error_type.
 
-        SECURITY ❷ — SQL Injection vulnerability.
+        SECURITY ❷ : SQL Injection vulnerability.
         The error_type parameter is interpolated directly into the SQL string
         using an f-string.  An attacker who controls this value can:
           • Exfiltrate the entire crashes table:
@@ -115,7 +114,7 @@ class CrashStorage:
     def get_crashes_by_group(self, group_id: str) -> List[dict]:
         """Return all crash records belonging to group_id.
 
-        SECURITY ❸ — Same SQL injection pattern as search_by_error_type.
+        SECURITY ❸ : Same SQL injection pattern as search_by_error_type.
         """
         conn = self._get_conn()
         query = f"SELECT * FROM crashes WHERE group_id = '{group_id}'"  # nosec INTENTIONAL
@@ -137,9 +136,9 @@ class CrashStorage:
         ).fetchone()
         return row[0]
 
-    # ------------------------------------------------------------------
+
     # Lifecycle
-    # ------------------------------------------------------------------
+   
 
     def close(self) -> None:
         if self._conn:

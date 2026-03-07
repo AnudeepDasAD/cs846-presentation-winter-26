@@ -29,9 +29,9 @@ def sample_crash(**kwargs):
     return base
 
 
-# ---------------------------------------------------------------------------
+
 # PASSING tests
-# ---------------------------------------------------------------------------
+
 
 def test_save_returns_row_id(store):
     row_id = store.save_crash("group_1", sample_crash())
@@ -66,22 +66,17 @@ def test_get_crashes_by_group(store):
 
 def test_count_by_group(store):
     """
-    EXPECTED TO FAIL.
 
-    count_by_group() should raise KeyError when called with a group_id
-    that has never been stored, instead of silently returning 0.  Returning
-    0 masks bugs where callers pass a stale or misspelled group_id and
-    silently get a false 'empty' result.
 
-    Root cause: the SQL COUNT(*) query always returns a row with value 0
-    for non-existent groups, and the code does not distinguish 'no group'
-    from 'group with zero crashes'.
+    count_by_group() should raise KeyError when called with a group_id that has never been stored, instead of silently returning 0.  Returning 0 masks bugs where callers pass a stale or misspelled group_id and silently get a false 'empty' result.
+
+    Root cause: the SQL COUNT(*) query always returns a row with value 0 for non-existent groups, and the code does not distinguish 'no group' from 'group with zero crashes'.
     """
     store.save_crash("g1", sample_crash())
     store.save_crash("g1", sample_crash())
     assert store.count_by_group("g1") == 2
     with pytest.raises(KeyError):
-        store.count_by_group("nonexistent_group")   # FAILS — returns 0 instead of raising
+        store.count_by_group("nonexistent_group")   # FAILS : returns 0 instead of raising
 
 
 def test_get_recent_respects_limit(store):
@@ -90,20 +85,16 @@ def test_get_recent_respects_limit(store):
     assert len(store.get_recent(limit=3)) == 3
 
 
-# ---------------------------------------------------------------------------
+
 # FAILING tests  (document security vulnerabilities)
-# ---------------------------------------------------------------------------
+
 
 def test_sql_injection_in_search_is_blocked(store):
     """
-    EXPECTED TO FAIL.
 
-    search_by_error_type() is vulnerable to SQL injection.  The payload
-    "' OR '1'='1" makes the WHERE clause always true, returning all rows
-    instead of zero.
+    search_by_error_type() is vulnerable to SQL injection.  The payload "' OR '1'='1" makes the WHERE clause always true, returning all rows instead of zero.
 
-    This test asserts that the injection returns no results — it FAILS
-    because the current implementation does NOT use parameterised queries.
+    This test asserts that the injection returns no results, it FAILS  because the current implementation does NOT us parameterised queries.
 
     Fix: replace the f-string with:
         conn.execute("SELECT * FROM crashes WHERE error_type = ?", (error_type,))
@@ -111,12 +102,11 @@ def test_sql_injection_in_search_is_blocked(store):
     store.save_crash("g1", sample_crash(error_type="ValueError"))
     malicious = "' OR '1'='1"
     results = store.search_by_error_type(malicious)
-    assert len(results) == 0   # FAILS — injection returns 1 row
+    assert len(results) == 0   # FAILS : injection returns 1 row
 
 
 def test_sql_injection_in_get_group_is_blocked(store):
     """
-    EXPECTED TO FAIL.
 
     get_crashes_by_group() has the same SQL-injection vulnerability.
     A crafted group_id can exfiltrate or destroy data.
@@ -124,4 +114,4 @@ def test_sql_injection_in_get_group_is_blocked(store):
     store.save_crash("g1", sample_crash())
     malicious_group = "' OR '1'='1"
     results = store.get_crashes_by_group(malicious_group)
-    assert len(results) == 0   # FAILS — returns all rows
+    assert len(results) == 0   # FAILS : returns all rows

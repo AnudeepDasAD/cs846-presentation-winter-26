@@ -1,5 +1,5 @@
 """
-fingerprint.py - Crash fingerprint generation.
+fingerprint.py:Crash fingerprint generation.
 
 Parses a raw stack trace and produces a short hash that uniquely
 identifies a crash's *type*, so that repeated occurrences can be
@@ -25,9 +25,9 @@ class CrashFingerprint:
         self.error_message = error_message
         self._parsed_frames: List[Tuple[str, str, str]] = []
 
-    # ------------------------------------------------------------------
+    
     # Public API
-    # ------------------------------------------------------------------
+
 
     def generate(self) -> str:
         """Return a hex-digest fingerprint for this crash.
@@ -45,7 +45,7 @@ class CrashFingerprint:
         frames = self.parse_frames()
         top_frames = frames[:MAX_FRAMES]
 
-        # BUG ❶ — raw error_message is included verbatim.
+        # BUG ❶ : raw error_message is included verbatim.
         # Two crashes from different database hosts produce different fingerprints
         # even though they represent the exact same code path and root cause:
         #   "Connection refused: 10.0.0.1:5432"  →  fingerprint A
@@ -68,7 +68,7 @@ class CrashFingerprint:
     def normalize_message(self, message: str) -> str:
         """Strip numeric tokens from a message to aid grouping.
 
-        BUG ❷ — Normalization is incomplete.  It replaces bare digits but
+        BUG ❷ : Normalization is incomplete.  It replaces bare digits but
         misses UUIDs, ISO timestamps, IPv4 addresses, and hex error codes.
         Examples that still vary after normalization:
           "Timeout at 2024-01-15T09:23:11Z"

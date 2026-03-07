@@ -18,9 +18,8 @@ HOUR_AGO = NOW - 3600
 DAY_AGO  = NOW - 86400
 
 
-# ---------------------------------------------------------------------------
+
 # PASSING tests
-# ---------------------------------------------------------------------------
 
 def test_top_crashes_order():
     groups = make_groups({
@@ -35,19 +34,15 @@ def test_top_crashes_order():
 
 def test_top_crashes_respects_n():
     """
-    EXPECTED TO FAIL.
+    get_top_crashes() returns 2-tuples (group_id, count) but callers need to know the dominant error_type for each group without a second lookup.
+    Each tuple should be (group_id, count, error_type) : a 3-element tuple.
 
-    get_top_crashes() returns 2-tuples (group_id, count) but callers need
-    to know the dominant error_type for each group without a second lookup.
-    Each tuple should be (group_id, count, error_type) — a 3-element tuple.
-
-    Root cause: get_top_crashes() only stores the count, discarding the
-    error_type metadata that is already available in the group members.
+    Root cause: get_top_crashes() only stores the count, discarding the error_type metadata that is already available in the group members.
     """
     groups = make_groups({f"g{i}": [("E", NOW)] * i for i in range(1, 11)})
     top = CrashAnalyzer(groups).get_top_crashes(3)
     assert len(top) == 3
-    assert all(len(t) == 3 for t in top), "Each tuple should be (group_id, count, error_type)"   # FAILS — tuples have only 2 elements
+    assert all(len(t) == 3 for t in top), "Each tuple should be (group_id, count, error_type)"   # FAILS : tuples have only 2 elements
 
 
 def test_error_distribution_sums_to_100():
@@ -67,12 +62,9 @@ def test_generate_report_no_data():
 
 def test_generate_report_has_expected_keys():
     """
-    EXPECTED TO FAIL.
 
-    A well-formed report should include a 'generated_at' timestamp so
-    consumers know when the snapshot was taken.  The current implementation
-    omits this field, making it impossible to tell if a cached report is
-    stale without external bookkeeping.
+
+    A well-formed report should include a 'generated_at' timestamp so consumers know when the snapshot was taken. The current implementation omits this field, making it impossible to tell if a cached report is stale without external bookkeeping.
     """
     groups = make_groups({"g1": [("ValueError", NOW)]})
     report = CrashAnalyzer(groups).generate_report()
@@ -90,13 +82,13 @@ def test_crash_rate_counts_recent():
     assert rate == pytest.approx(2.0)   # 2 recent crashes / 1 hour
 
 
-# ---------------------------------------------------------------------------
+
 # FAILING tests  (document known bugs)
-# ---------------------------------------------------------------------------
+
 
 def test_error_distribution_empty_returns_empty_dict():
     """
-    EXPECTED TO FAIL.
+
 
     get_error_distribution() should return {} when there are no crashes.
     Currently raises ZeroDivisionError because total == 0.
@@ -108,13 +100,9 @@ def test_error_distribution_empty_returns_empty_dict():
 
 def test_crash_rate_zero_window_raises_value_error():
     """
-    EXPECTED TO FAIL.
-
-    Passing window_seconds=0 divides by zero.  The function should raise
-    ValueError("window_seconds must be positive") instead of the raw
-    ZeroDivisionError that leaks implementation details.
+    Passing window_seconds=0 divides by zero.  The function should raise ValueError("window_seconds must be positive") instead of the raw ZeroDivisionError that leaks implementation details.
     """
     groups = make_groups({"g1": [("E", NOW)]})
     analyzer = CrashAnalyzer(groups)
     with pytest.raises(ValueError, match="window_seconds must be positive"):
-        analyzer.get_crash_rate(window_seconds=0)   # FAILS — raises ZeroDivisionError
+        analyzer.get_crash_rate(window_seconds=0)   # FAILS :raises ZeroDivisionError

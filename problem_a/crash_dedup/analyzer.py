@@ -1,9 +1,7 @@
 """
-analyzer.py - Crash pattern analysis and reporting.
+analyzer.py: Crash pattern analysis and reporting.
 
-Consumes the crash groups produced by CrashDeduplicator and computes
-statistics useful for triage: frequency rankings, error-type distribution,
-and time-windowed crash rates.
+Consumes the crash groups produced by CrashDeduplicator and computes statistics useful for triage: frequency rankings, error-type distribution, and time-windowed crash rates.
 """
 
 import time
@@ -23,9 +21,9 @@ class CrashAnalyzer:
         """
         self.crash_groups = crash_groups
 
-    # ------------------------------------------------------------------
-    # Statistics
-    # ------------------------------------------------------------------
+
+    # Statistics top crashes, crash rates, error distribution, new groups today
+
 
     def get_top_crashes(self, n: int = 5) -> List[Tuple[str, int]]:
         """Return the top-n crash groups sorted by occurrence count (descending)."""
@@ -80,9 +78,9 @@ class CrashAnalyzer:
             # Should be: min(c["timestamp"] for c in members) >= midnight
         )
 
-    # ------------------------------------------------------------------
-    # Report
-    # ------------------------------------------------------------------
+
+    # Report generation 
+
 
     def generate_report(self) -> dict:
         """Produce a summary dict suitable for display or serialisation."""
